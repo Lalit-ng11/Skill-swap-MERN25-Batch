@@ -31,15 +31,15 @@ router.get('/', async (req, res) => {
 });
 
 // Get My Skills
-router.get('/my', auth, async (req, res) => {
+router.get('/my-skills', auth, async (req, res) => {
   try {
-    const skills = await Skill.find({ user: req.user.id }).populate('user', 'name email');
+    const skills = await Skill.find({ user: req.user.id });
     res.json(skills);
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching your skills' });
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
-
 // Delete
 router.delete('/:id', auth, async (req, res) => {
   try {

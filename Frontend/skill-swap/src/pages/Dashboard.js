@@ -9,23 +9,22 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchMySkills = async () => {
-      try {
-        const res = await API.get('/skills', {
-          headers: { Authorization: `Bearer ${user.token}` },
-        });
-
-        const onlyMySkills = res.data.filter(skill => skill.user._id === user._id);
-        setMySkills(onlyMySkills);
-      } catch (err) {
-        console.error('Error fetching skills:', err.message);
-      }
-    };
-
-    if (user?.token) {
+    if (user && user.token) {
       fetchMySkills();
     }
-  }, [user.token, user._id]);
+  }, [user]);
+
+  const fetchMySkills = async () => {
+    try {
+      if (!user || !user._id) return;
+      const response = await API.get('/skills/my-skills', {
+        headers: { Authorization: `Bearer ${user.token}` }
+      });
+      setMySkills(response.data);
+    } catch (error) {
+      console.error('Error fetching skills:', error.response?.data || error.message);
+    }
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this skill?')) return;
