@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import API from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
 import { ToastContainer, toast } from 'react-toastify';
@@ -67,6 +68,7 @@ const Requests = () => {
           {filteredRequests.map((r) => {
             const isReceiver = r.receiver?._id === currentUserId;
             const isPending = r.status === 'pending';
+            const otherUserId = currentUserId === r.sender?._id ? r.receiver?._id : r.sender?._id;
 
             return (
               <li key={r._id} className="list-group-item d-flex justify-content-between align-items-center">
@@ -82,7 +84,7 @@ const Requests = () => {
                     {r.status}
                   </span>
 
-                  {/* Show Email After Accepted */}
+                  {/* Show Contact or Message Button After Accepted */}
                   {r.status === 'accepted' && (
                     <div className="mt-2">
                       <small className="text-muted">
@@ -93,11 +95,18 @@ const Requests = () => {
                             : r.sender?.email}
                         </strong>
                       </small>
+                      <br />
+                      {/* Message Button */}
+                      <Link to={`/chat/${otherUserId}`}>
+                        <button className="btn btn-outline-primary btn-sm mt-2">
+                          Message
+                        </button>
+                      </Link>
                     </div>
                   )}
                 </div>
 
-                {/*  Action buttons */}
+                {/* Accept / Reject Buttons */}
                 {isReceiver && isPending && (
                   <div>
                     <button

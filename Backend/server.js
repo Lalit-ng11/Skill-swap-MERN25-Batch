@@ -20,6 +20,13 @@ app.use('/api/skills', skillRoutes);
 const requestRoutes = require('./routes/requests');
 app.use('/api/requests', requestRoutes);
 
+
+
+const messageRoutes = require('./routes/messages');
+app.use('/api/messages', messageRoutes);
+
+
+
 // Connect to DB and start server
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
