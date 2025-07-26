@@ -9,7 +9,7 @@ const SkillForm = ({ editMode = false }) => {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const navigate = useNavigate();
-  const { id } = useParams(); // for /edit-skill/:id
+  const { id } = useParams();
   const location = useLocation();
 
   //  Load skill data for editing if in edit mode
@@ -25,8 +25,6 @@ const SkillForm = ({ editMode = false }) => {
   // Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Defensive check: ensure user is logged in
     if (!user?.token) {
       alert("You're not logged in. Please log in first.");
       return;

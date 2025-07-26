@@ -1,4 +1,3 @@
-
 import { useContext, useEffect, useState } from 'react';
 import API from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
@@ -35,38 +34,48 @@ const SkillList = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h2 className="mb-4">Available Skills</h2>
-      <div className="row">
-        {skills.length === 0 ? (
-          <div className="text-muted">No skills found.</div>
-        ) : (
-          skills.map((skill) => (
-            <div key={skill._id} className="col-md-4 mb-3">
-              <div className="card shadow-sm h-100">
-                <div className="card-body d-flex flex-column">
-                  <h5 className="card-title">{skill.title}</h5>
-                  <p className="card-text">{skill.description}</p>
-                  <span className="badge bg-info mb-2">
-                    {skill.category || 'Uncategorized'}
-                  </span>
-                  <p className="card-text text-muted mt-auto">
-                    Posted by: {skill.user?.name || skill.user?.email || 'Unknown'}
-                  </p>
+    <div className="py-5 bg-light">
+      <div className="container">
+        <h2 className="text-center text-primary fw-bold mb-4">Explore Skills Shared by Others</h2>
 
-                  {/*  Prevent requesting own skill */}
-                  {skill.user?._id !== user?._id && (
-                    <button
-                      className="btn btn-primary mt-2"
-                      onClick={() => sendRequest(skill._id)}
-                    >
-                      Request Skill
-                    </button>
-                  )}
+        {skills.length === 0 ? (
+          <div className="text-center text-muted">No skills found.</div>
+        ) : (
+          <div className="row g-4">
+            {skills.map((skill) => (
+              <div key={skill._id} className="col-lg-4 col-md-6 d-flex">
+                <div className="card shadow border border-dark flex-fill">
+                  <div className="card-header bg-dark text-white">
+                    <h5 className="mb-0 text-truncate">{skill.title}</h5>
+                  </div>
+                  <div className="card-body d-flex flex-column">
+                    <p className="card-text mb-2">{skill.description}</p>
+                    
+                    <div className="mb-2">
+                      <span className="badge bg-info text-dark">
+                        {skill.category || 'Uncategorized'}
+                      </span>
+                    </div>
+
+                    <div className="text-muted mt-auto">
+                      <small>
+                        Posted by: <strong>{skill.user?.name || skill.user?.email || 'Unknown'}</strong>
+                      </small>
+                    </div>
+
+                    {skill.user?._id !== user?._id && (
+                      <button
+                        className="btn btn-success mt-3"
+                        onClick={() => sendRequest(skill._id)}
+                      >
+                        Request Skill
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>

@@ -49,85 +49,108 @@ const Requests = () => {
   });
 
   return (
-    <div className="container mt-4">
-      <ToastContainer />
-      <h2>My Skill Requests</h2>
+    <div className="py-4">
+      <div className="container">
+        <ToastContainer />
+        <h2 className="mb-4 text-center">My Skill Requests</h2>
 
-      <div className="mb-3">
-        <button className={`btn btn-sm me-2 ${filter === 'all' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('all')}>All</button>
-        <button className={`btn btn-sm me-2 ${filter === 'sent' ? 'btn-success' : 'btn-outline-success'}`} onClick={() => setFilter('sent')}>Sent</button>
-        <button className={`btn btn-sm ${filter === 'received' ? 'btn-warning' : 'btn-outline-warning'}`} onClick={() => setFilter('received')}>Received</button>
-      </div>
+        <div className="d-flex justify-content-center mb-4">
+          <button
+            className={`btn btn-sm mx-1 ${filter === 'all' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setFilter('all')}
+          >
+            All
+          </button>
+          <button
+            className={`btn btn-sm mx-1 ${filter === 'sent' ? 'btn-success' : 'btn-secondary'}`}
+            onClick={() => setFilter('sent')}
+          >
+            Sent
+          </button>
+          <button
+            className={`btn btn-sm mx-1 ${filter === 'received' ? 'btn-warning' : 'btn-secondary'}`}
+            onClick={() => setFilter('received')}
+          >
+            Received
+          </button>
+        </div>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : filteredRequests.length === 0 ? (
-        <p>No requests found.</p>
-      ) : (
-        <ul className="list-group">
-          {filteredRequests.map((r) => {
-            const isReceiver = r.receiver?._id === currentUserId;
-            const isPending = r.status === 'pending';
-            const otherUserId = currentUserId === r.sender?._id ? r.receiver?._id : r.sender?._id;
+        {loading ? (
+          <div className="text-center text-muted">Loading...</div>
+        ) : filteredRequests.length === 0 ? (
+          <div className="text-center text-muted">No requests found.</div>
+        ) : (
+          <div className="row">
+            {filteredRequests.map((r) => {
+              const isReceiver = r.receiver?._id === currentUserId;
+              const isPending = r.status === 'pending';
+              const otherUserId =
+                currentUserId === r.sender?._id ? r.receiver?._id : r.sender?._id;
 
-            return (
-              <li key={r._id} className="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                  <strong>{r.skill?.title || 'Untitled Skill'}</strong><br />
-                  <small>From: {r.sender?.name || 'Unknown'} | To: {r.receiver?.name || 'Unknown'}</small><br />
-                  Status:{' '}
-                  <span className={
-                    r.status === 'pending' ? 'text-warning' :
-                    r.status === 'accepted' ? 'text-success' :
-                    'text-danger'
-                  }>
-                    {r.status}
-                  </span>
+              return (
+                <div key={r._id} className="col-md-6 col-lg-4 mb-4 d-flex">
+                  <div className="card shadow border border-dark bg-light text-dark w-100 d-flex flex-column" style={{ borderWidth: '2px' }}>
+                    <div className="card-body d-flex flex-column">
+                      <h5 className="card-title">{r.skill?.title || 'Untitled Skill'}</h5>
+                      <p className="card-text mb-2">
+                        <strong>From:</strong> {r.sender?.name || 'Unknown'}<br />
+                        <strong>To:</strong> {r.receiver?.name || 'Unknown'}
+                      </p>
+                      <p className="card-text">
+                        <strong>Status:</strong>{' '}
+                        <span className={
+                          r.status === 'pending' ? 'text-warning' :
+                          r.status === 'accepted' ? 'text-success' :
+                          'text-danger'
+                        }>
+                          {r.status}
+                        </span>
+                      </p>
 
-                  {/* Show Contact or Message Button After Accepted */}
-                  {r.status === 'accepted' && (
-                    <div className="mt-2">
-                      <small className="text-muted">
-                        Contact:{' '}
-                        <strong>
-                          {currentUserId === r.sender?._id
-                            ? r.receiver?.email
-                            : r.sender?.email}
-                        </strong>
-                      </small>
-                      <br />
-                      {/* Message Button */}
-                      <Link to={`/chat/${otherUserId}`}>
-                        <button className="btn btn-outline-primary btn-sm mt-2">
-                          Message
-                        </button>
-                      </Link>
+                      {/* Show contact + message if accepted */}
+                      {r.status === 'accepted' && (
+                        <div className="mt-auto">
+                          <div className="text-muted mb-2">
+                            <strong>Contact:</strong>{' '}
+                            {currentUserId === r.sender?._id
+                              ? r.receiver?.email
+                              : r.sender?.email}
+                          </div>
+                          <div className="text-end">
+                            <Link to={`/chat/${otherUserId}`}>
+                              <button className="btn btn-outline-primary btn-sm">
+                                Message
+                              </button>
+                            </Link>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Accept/Reject buttons if receiver and pending */}
+                      {isReceiver && isPending && (
+                        <div className="mt-auto d-flex justify-content-between">
+                          <button
+                            className="btn btn-sm btn-success"
+                            onClick={() => handleStatus(r._id, 'accepted')}
+                          >
+                            Accept
+                          </button>
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() => handleStatus(r._id, 'rejected')}
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-
-                {/* Accept / Reject Buttons */}
-                {isReceiver && isPending && (
-                  <div>
-                    <button
-                      className="btn btn-sm btn-success me-2"
-                      onClick={() => handleStatus(r._id, 'accepted')}
-                    >
-                      Accept
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleStatus(r._id, 'rejected')}
-                    >
-                      Reject
-                    </button>
                   </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
